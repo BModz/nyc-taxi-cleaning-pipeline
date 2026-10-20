@@ -88,15 +88,15 @@ def shot(src: str, caption: str) -> str:
 
 
 FLOW_SVG = """
-<svg viewBox="0 0 900 190" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13">
+<svg viewBox="0 0 900 190" xmlns="http://www.w3.org/2000/svg" font-family="Calibri, Arial" font-size="13">
   <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-    <path d="M0,0 L10,5 L0,10 z" fill="#1f3a8a"/></marker></defs>
-  <g fill="#eef2ff" stroke="#1f3a8a" stroke-width="1.5">
-    <rect x="10" y="20" width="150" height="70" rx="8"/><rect x="190" y="20" width="150" height="70" rx="8"/>
-    <rect x="370" y="20" width="160" height="70" rx="8"/><rect x="560" y="20" width="150" height="70" rx="8"/>
-    <rect x="740" y="20" width="150" height="70" rx="8"/>
+    <path d="M0,0 L10,5 L0,10 z" fill="#000"/></marker></defs>
+  <g fill="#fff" stroke="#000" stroke-width="1">
+    <rect x="10" y="20" width="150" height="70" rx="0"/><rect x="190" y="20" width="150" height="70" rx="0"/>
+    <rect x="370" y="20" width="160" height="70" rx="0"/><rect x="560" y="20" width="150" height="70" rx="0"/>
+    <rect x="740" y="20" width="150" height="70" rx="0"/>
   </g>
-  <g fill="#1f3a8a" font-weight="700" text-anchor="middle" font-size="15">
+  <g fill="#000" text-anchor="middle" font-size="15">
     <text x="85" y="48">Source</text><text x="265" y="48">Extract</text><text x="450" y="48">Transform</text>
     <text x="635" y="48">Load</text><text x="815" y="48">Serve</text>
   </g>
@@ -105,16 +105,16 @@ FLOW_SVG = """
     <text x="450" y="70">dtypes, dates, clean()</text><text x="635" y="70">to_sql → Postgres</text>
     <text x="815" y="70">psql / pgAdmin</text>
   </g>
-  <g stroke="#1f3a8a" stroke-width="2" marker-end="url(#a)">
+  <g stroke="#000" stroke-width="2" marker-end="url(#a)">
     <line x1="160" y1="55" x2="188" y2="55"/><line x1="340" y1="55" x2="368" y2="55"/>
     <line x1="530" y1="55" x2="558" y2="55"/><line x1="710" y1="55" x2="738" y2="55"/>
   </g>
-  <rect x="190" y="115" width="520" height="60" rx="8" fill="none" stroke="#888" stroke-dasharray="5 4"/>
-  <text x="200" y="134" fill="#555">taxi_ingest:v001 container (Dockerfile → ingest_data.py), 100,000-row chunks</text>
-  <text x="200" y="154" fill="#555">network pg-network (docker-compose.yaml) → host "pgdatabase", table yellow_taxi_trips</text>
-  <rect x="740" y="115" width="150" height="60" rx="8" fill="none" stroke="#888" stroke-dasharray="5 4"/>
-  <text x="815" y="134" fill="#555" text-anchor="middle">pgAdmin :8085</text>
-  <text x="815" y="154" fill="#555" text-anchor="middle">Postgres :5432</text>
+  <rect x="190" y="115" width="520" height="60" rx="0" fill="none" stroke="#000" stroke-dasharray="5 4"/>
+  <text x="200" y="134" fill="#222">taxi_ingest:v001 container (Dockerfile → ingest_data.py), 100,000-row chunks</text>
+  <text x="200" y="154" fill="#222">network pg-network (docker-compose.yaml) → host "pgdatabase", table yellow_taxi_trips</text>
+  <rect x="740" y="115" width="150" height="60" rx="0" fill="none" stroke="#000" stroke-dasharray="5 4"/>
+  <text x="815" y="134" fill="#222" text-anchor="middle">pgAdmin :8085</text>
+  <text x="815" y="154" fill="#222" text-anchor="middle">Postgres :5432</text>
 </svg>
 """
 
