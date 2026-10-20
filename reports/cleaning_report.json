@@ -1,0 +1,314 @@
+{
+  "input_file": "data\\raw\\yellow_tripdata_2021-01.csv.gz",
+  "output_file": "data\\clean\\yellow_tripdata_2021-01_clean.csv.gz",
+  "chunk_size": 100000,
+  "metrics": {
+    "input_rows": 1369765,
+    "removed_missing_critical": 0,
+    "removed_invalid_dates": 6586,
+    "removed_non_positive_fares": 7343,
+    "removed_invalid_distance": 18362,
+    "removed_zero_passengers": 26242,
+    "removed_negative_charges": 2,
+    "removed_duplicates": 0,
+    "filled_passenger_count": 91241,
+    "filled_RatecodeID": 91241,
+    "filled_store_and_fwd_flag": 91241,
+    "filled_payment_type": 91241,
+    "filled_congestion_surcharge": 0,
+    "output_rows": 1311230,
+    "removed_total": 58535
+  },
+  "raw_profile": {
+    "VendorID": {
+      "dtype": "Int64",
+      "nulls": 98352,
+      "null_pct": 7.18,
+      "min": 1,
+      "max": 2,
+      "mean": 1.677
+    },
+    "tpep_pickup_datetime": {
+      "dtype": "datetime64[ns]",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": "2008-12-31T23:05:14.000",
+      "max": "2021-02-22T16:52:16.000",
+      "mean": null
+    },
+    "tpep_dropoff_datetime": {
+      "dtype": "datetime64[ns]",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": "2008-12-31T23:07:22.000",
+      "max": "2021-02-22T16:56:15.000",
+      "mean": null
+    },
+    "passenger_count": {
+      "dtype": "Int64",
+      "nulls": 98352,
+      "null_pct": 7.18,
+      "min": 0,
+      "max": 8,
+      "mean": 1.412
+    },
+    "trip_distance": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 263163.28,
+      "mean": 4.632
+    },
+    "RatecodeID": {
+      "dtype": "Int64",
+      "nulls": 98352,
+      "null_pct": 7.18,
+      "min": 1,
+      "max": 99,
+      "mean": 1.035
+    },
+    "store_and_fwd_flag": {
+      "dtype": "string",
+      "nulls": 98352,
+      "null_pct": 7.18,
+      "min": null,
+      "max": null,
+      "mean": null
+    },
+    "PULocationID": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 265,
+      "mean": 165.247
+    },
+    "DOLocationID": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 265,
+      "mean": 161.496
+    },
+    "payment_type": {
+      "dtype": "Int64",
+      "nulls": 98352,
+      "null_pct": 7.18,
+      "min": 1,
+      "max": 4,
+      "mean": 1.281
+    },
+    "fare_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -490.0,
+      "max": 6960.5,
+      "mean": 12.097
+    },
+    "extra": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -5.5,
+      "max": 8.25,
+      "mean": 0.971
+    },
+    "mta_tax": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -0.5,
+      "max": 0.5,
+      "mean": 0.493
+    },
+    "tip_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -100.0,
+      "max": 1140.44,
+      "mean": 1.918
+    },
+    "tolls_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -31.12,
+      "max": 811.75,
+      "mean": 0.248
+    },
+    "improvement_surcharge": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -0.3,
+      "max": 0.3,
+      "mean": 0.297
+    },
+    "total_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -492.8,
+      "max": 7661.28,
+      "mean": 17.474
+    },
+    "congestion_surcharge": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": -2.5,
+      "max": 3.0,
+      "mean": 2.116
+    }
+  },
+  "clean_profile": {
+    "VendorID": {
+      "dtype": "Int64",
+      "nulls": 91241,
+      "null_pct": 6.96,
+      "min": 1,
+      "max": 2,
+      "mean": 1.696
+    },
+    "tpep_pickup_datetime": {
+      "dtype": "datetime64[ns]",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": "2021-01-01T00:00:04.000",
+      "max": "2021-01-31T23:59:49.000",
+      "mean": null
+    },
+    "tpep_dropoff_datetime": {
+      "dtype": "datetime64[ns]",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": "2021-01-01T00:02:49.000",
+      "max": "2021-02-01T21:58:59.000",
+      "mean": null
+    },
+    "passenger_count": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 8,
+      "mean": 1.415
+    },
+    "trip_distance": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.01,
+      "max": 95.5,
+      "mean": 2.932
+    },
+    "RatecodeID": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 99,
+      "mean": 7.841
+    },
+    "store_and_fwd_flag": {
+      "dtype": "string",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": null,
+      "max": null,
+      "mean": null
+    },
+    "PULocationID": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 265,
+      "mean": 165.058
+    },
+    "DOLocationID": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 265,
+      "mean": 161.747
+    },
+    "payment_type": {
+      "dtype": "Int64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 1,
+      "max": 5,
+      "mean": 1.527
+    },
+    "fare_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.01,
+      "max": 6960.5,
+      "mean": 12.053
+    },
+    "extra": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 8.25,
+      "mean": 0.958
+    },
+    "mta_tax": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 0.5,
+      "mean": 0.499
+    },
+    "tip_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 696.48,
+      "mean": 1.946
+    },
+    "tolls_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 811.75,
+      "mean": 0.244
+    },
+    "improvement_surcharge": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 0.3,
+      "mean": 0.3
+    },
+    "total_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.01,
+      "max": 7661.28,
+      "mean": 17.52
+    },
+    "congestion_surcharge": {
+      "dtype": "float64",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": 0.0,
+      "max": 2.5,
+      "mean": 2.166
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# Data files are downloaded/generated locally, never committed
+data/
+*.csv
+*.csv.gz
+*.parquet
+
+# Virtual environment
+.venv/
+__pycache__/
