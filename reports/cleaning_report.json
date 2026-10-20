@@ -16,6 +16,8 @@
     "filled_store_and_fwd_flag": 91241,
     "filled_payment_type": 91241,
     "filled_congestion_surcharge": 0,
+    "flagged_missing_vendor": 91241,
+    "flagged_high_fare": 1,
     "output_rows": 1311230,
     "removed_total": 58535
   },
@@ -309,6 +311,22 @@
       "min": 0.0,
       "max": 2.5,
       "mean": 2.166
+    },
+    "flag_missing_vendor": {
+      "dtype": "bool",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": false,
+      "max": true,
+      "mean": 0.07
+    },
+    "flag_high_fare": {
+      "dtype": "bool",
+      "nulls": 0,
+      "null_pct": 0.0,
+      "min": false,
+      "max": true,
+      "mean": 0.0
     }
   }
 }

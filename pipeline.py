@@ -33,6 +33,19 @@ PERIOD_END = pd.Timestamp("2021-02-01")
 MAX_TRIP_DURATION = pd.Timedelta(hours=24)
 # Longest plausible single yellow-cab trip; anything above is a meter error.
 MAX_TRIP_DISTANCE = 100.0
+# Fares above this are kept but flagged: rare, yet possible for long
+# negotiated trips, so they are not proven errors.
+HIGH_FARE = 500.0
+
+REMOVAL_RULES = {
+    "removed_missing_critical": "missing critical fields",
+    "removed_invalid_dates": "invalid trip dates",
+    "removed_non_positive_fares": "negative/zero fare or total",
+    "removed_invalid_distance": "distance <= 0 or > 100 mi",
+    "removed_zero_passengers": "zero passengers",
+    "removed_negative_charges": "negative extras/tips/surcharges",
+    "removed_duplicates": "duplicates",
+}
 
 # Surcharges and tips are never legitimately negative on a kept trip.
 CHARGE_COLUMNS = [
@@ -215,6 +228,12 @@ def clean(df: pd.DataFrame, seen_hashes: set | None = None) -> tuple[pd.DataFram
             if n:
                 df[col] = df[col].fillna(value)
 
+    # Flags keep the row but mark it for anyone using the data downstream.
+    df["flag_missing_vendor"] = df["VendorID"].isna()
+    df["flag_high_fare"] = df["fare_amount"] > HIGH_FARE
+    metrics["flagged_missing_vendor"] = int(df["flag_missing_vendor"].sum())
+    metrics["flagged_high_fare"] = int(df["flag_high_fare"].sum())
+
     metrics["output_rows"] = len(df)
     metrics["removed_total"] = metrics["input_rows"] - metrics["output_rows"]
     return df, metrics
@@ -250,6 +269,27 @@ def run(input_path: Path, output_path: Path, report_path: Path, chunk_size: int)
     print("\n=== Cleaning metrics ===")
     for k, v in totals.items():
         print(f"{k:<32}{v:>12,}")
+
+    removed = {label: totals[key] for key, label in REMOVAL_RULES.items()}
+    print("\n=== {rule: rows_removed} ===")
+    print(removed)
+
+    rows, before = [], totals["input_rows"]
+    for label, n in removed.items():
+        rows.append({"rule": label, "rows_before": before, "rows_removed": n, "rows_after": before - n})
+        before -= n
+    rule_table = pd.DataFrame(rows)
+    print("\n=== Rows per rule, before and after ===")
+    print(rule_table.to_string(index=False))
+
+    # Verification: every row is either kept or removed by exactly one rule,
+    # and the file on disk holds exactly the rows we counted.
+    assert totals["input_rows"] - sum(removed.values()) == totals["output_rows"]
+    with gzip.open(output_path, "rt") as f:
+        written = sum(1 for _ in f) - 1
+    assert written == totals["output_rows"], (written, totals["output_rows"])
+    print(f"\nVerified: {totals['input_rows']:,} in - {sum(removed.values()):,} removed "
+          f"= {totals['output_rows']:,} out; file on disk has {written:,} rows")
 
     report = {
         "input_file": str(input_path),

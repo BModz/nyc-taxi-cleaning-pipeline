@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NYC Taxi Pipeline Report</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 10.5pt; line-height: 1.5; color: #1d1d1f; }
+  h1 { color: #1f3a8a; font-size: 26pt; margin: 0 0 6px; }
+  h2 { color: #1f3a8a; font-size: 15pt; border-bottom: 2px solid #1f3a8a; padding-bottom: 3px; margin: 22px 0 10px; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 4px; break-after: avoid; }
+  p { margin: 6px 0; }
+  code { font-family: Consolas, monospace; font-size: 9.5pt; background: #f1f3f8; padding: 0 3px; border-radius: 3px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 9.8pt; break-inside: avoid; }
+  th { background: #1f3a8a; color: #fff; text-align: left; padding: 5px 8px; }
+  td { border-bottom: 1px solid #d9dce3; padding: 4px 8px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f6fa; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  figure { margin: 10px 0 14px; break-inside: avoid; }
+  figure img { width: 100%; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+  figcaption { font-size: 9pt; color: #555; margin-top: 4px; font-style: italic; }
+  .cover { height: 245mm; display: flex; flex-direction: column; justify-content: center; break-after: page; }
+  .cover .sub { font-size: 14pt; color: #444; margin-bottom: 40px; }
+  .cover table { width: 70%; font-size: 12pt; }
+  .cover td:first-child { font-weight: 600; width: 32%; }
+  .note { background: #eef2ff; border-left: 4px solid #1f3a8a; padding: 8px 12px; margin: 10px 0; }
+  .stage { margin: 4px 0; }
+  .stage b { color: #1f3a8a; }
+  .tag { display: inline-block; font-size: 8.5pt; font-weight: 700; padding: 0 6px; border-radius: 3px; color: #fff; }
+  .drop { background: #c0392b; } .fix { background: #2471a3; } .flag { background: #b9770e; }
+  .page { break-before: page; }
+  ul { margin: 4px 0 8px 18px; padding: 0; }
+</style>
+</head>
+<body>
+
+<!-- 1. Cover -->
+<section class="cover">
+  <h1>NYC Yellow Taxi Data Pipeline</h1>
+  <div class="sub">Ingesting, profiling and cleaning <code>yellow_tripdata_2021-01.csv.gz</code></div>
+  <table>
+    <tr><td>Name</td><td>$name</td></tr>
+    <tr><td>Student ID</td><td>$sid</td></tr>
+    <tr><td>Date</td><td>$date</td></tr>
+    <tr><td>Repository</td><td><a href="$repo">$repo</a></td></tr>
+  </table>
+</section>
+
+<!-- 2. Flow -->
+<h2>2. The flow, in my words</h2>
+$flow
+<p class="stage"><b>Source.</b> The NYC TLC yellow-taxi trip records for January 2021, published as a gzip-compressed CSV
+(1,369,765 trips, 18 columns) on the DataTalksClub <code>nyc-tlc-data</code> GitHub release.</p>
+<p class="stage"><b>Extract.</b> <code>ingest_data.py</code> downloads the file and reads it with
+<code>pd.read_csv(..., chunksize=100_000)</code>, which returns an iterator of DataFrames instead of one huge DataFrame.</p>
+<p class="stage"><b>Transform.</b> Every chunk is read with an explicit schema: the two <code>tpep_*_datetime</code>
+columns are parsed as timestamps and the ID and count columns use pandas' nullable <code>Int64</code> type.
+The quality rules live in <code>pipeline.py</code>'s <code>clean(df)</code>, described in section 5.</p>
+<p class="stage"><b>Load.</b> Each chunk is written to the Postgres table <code>yellow_taxi_trips</code> with
+<code>DataFrame.to_sql</code>. The table is replaced once, on the first chunk, and every chunk after that is appended.</p>
+<p class="stage"><b>Serve.</b> The data is queried with <code>psql</code> inside the database container, or through
+pgAdmin at <code>localhost:8085</code>.</p>
+
+<h3>What each file does, and why</h3>
+<table>
+  <tr><th style="width:24%">File</th><th>What it does</th></tr>
+  <tr><td><code>ingest_data.py</code></td><td>Command-line loader. It takes the database user, password, host, port, database,
+  table and one or more <code>--url</code> values. It downloads each file, streams it in 100,000-row chunks into Postgres and then
+  checks that <code>SELECT COUNT(*)</code> equals the number of rows it read.</td></tr>
+  <tr><td><code>Dockerfile</code></td><td>Builds the <code>taxi_ingest:v001</code> image: <code>python:3.13-slim</code> plus pandas,
+  SQLAlchemy and psycopg2, with <code>ingest_data.py</code> as the entrypoint. The loader then runs the same way on any
+  machine, with no local Python setup.</td></tr>
+  <tr><td><code>docker-compose.yaml</code></td><td>Starts two services on one named network, <code>pg-network</code>:
+  <code>pgdatabase</code> (Postgres 16, with a named volume so the data survives restarts, and a health check) and
+  <code>pgadmin</code>. Credentials come from a git-ignored <code>.env</code> file, so no passwords are in the repository.</td></tr>
+  <tr><td><code>pipeline.py</code></td><td>Profiling and cleaning. It reads the same file in chunks, profiles every column, applies
+  <code>clean(df)</code>, writes the cleaned rows to <code>data/clean/</code> and saves the metrics to
+  <code>reports/cleaning_report.json</code>.</td></tr>
+</table>
+
+<h3>Why chunks, Int64, and replace on the first chunk</h3>
+<ul>
+  <li><b>Chunks:</b> the full month is about 1.4 million rows and takes 264 MB of memory once parsed (measured with <code>memory_usage(deep=True)</code>). Reading 100,000 rows at a time
+  keeps memory small and constant, and the progress line printed per chunk shows that the load is moving.</li>
+  <li><b>Int64:</b> <code>VendorID</code>, <code>passenger_count</code>, <code>RatecodeID</code> and <code>payment_type</code> have
+  98,352 missing values. NumPy's <code>int64</code> cannot store NaN, so without a schema pandas silently turns these columns into
+  <code>float64</code> (for example 1.0 instead of 1), and Postgres creates them as <code>double precision</code>. The nullable
+  <code>Int64</code> type keeps them as whole numbers with real NULLs, and they arrive as <code>bigint</code> (see the table schema in section 3).
+  Also, a column that is empty in the first chunk could be guessed as a different type in later chunks; a fixed schema keeps
+  every chunk the same.</li>
+  <li><b>Replace on the first chunk:</b> <code>df.head(0).to_sql(..., if_exists="replace")</code> creates an empty table from the
+  schema alone, so re-running the job starts clean instead of doubling the rows. Every chunk is then added with
+  <code>if_exists="append"</code>.</li>
+</ul>
+
+<!-- 3. What we ran -->
+<h2>3. What we ran in class</h2>
+<div class="note">I missed the in-class session, so I reproduced every step myself on my own machine on $date.
+The screenshots below are from that reproduction: each one shows the exact command and its real output.</div>
+
+<h3>Compose up</h3>
+<p><code>docker compose up -d --wait</code> creates the <code>pg-network</code> network, starts Postgres and pgAdmin in the
+background and waits until both report healthy.</p>
+$up
+$ps
+
+<h3>docker build</h3>
+<p><code>docker build -t taxi_ingest:v001 .</code> turns the Dockerfile into an image that contains Python, the libraries and the
+ingestion script.</p>
+$build
+
+<h3>container run into yellow_taxi_trips</h3>
+<p><code>docker run --network=pg-network ... --host=pgdatabase</code> starts the ingestion container on the compose network, and it
+loads the 14 chunks into the <code>yellow_taxi_trips</code> table.</p>
+$run
+
+<h3>Ingest COUNT = 1,369,765</h3>
+<p><code>SELECT COUNT(*)</code> run in the database container confirms that all 1,369,765 rows from the source file are in the table.</p>
+$count
+$schema
+
+<!-- 4. Findings -->
+<h2>4. What I found in the data</h2>
+<table>
+  <tr><th>Issue</th><th class="n">Rows</th><th>Detail</th></tr>
+  <tr><td>Nulls</td><td class="n">98,352 (7.18%)</td><td><code>VendorID</code>, <code>passenger_count</code>, <code>RatecodeID</code>,
+  <code>store_and_fwd_flag</code> and <code>payment_type</code> are all missing together, always on the same rows. No other column has nulls.</td></tr>
+  <tr><td>Bad dates</td><td class="n">6,586</td><td>Pickups run from 2008-12-31 to 2021-02-22, outside January 2021. Some dropoffs are
+  at or before the pickup, and some trips last over 24 hours.</td></tr>
+  <tr><td>Negative or zero fares</td><td class="n">7,411</td><td><code>fare_amount</code> as low as -490.00 and
+  <code>total_amount</code> as low as -492.80. These are mostly refunds or voided trips.</td></tr>
+  <tr><td>Zero distance</td><td class="n">19,952</td><td><code>trip_distance</code> = 0.</td></tr>
+  <tr><td>Extreme distance</td><td class="n">55</td><td>Over 100 miles, up to 263,163.28 miles: a meter error.</td></tr>
+  <tr><td>Zero passengers</td><td class="n">26,726</td><td><code>passenger_count</code> = 0, which is impossible for a real trip.</td></tr>
+  <tr><td>Negative charges</td><td class="n">6,667</td><td>Negative <code>extra</code>, <code>mta_tax</code>, tip, tolls or surcharges,
+  for example a tip of -100.00.</td></tr>
+  <tr><td>Very high fares</td><td class="n">Max 6,960.50</td><td>A <code>fare_amount</code> far above normal. Rare, but not proven wrong.</td></tr>
+  <tr><td>Duplicates</td><td class="n">0</td><td>No exact duplicate rows, checked both in pandas and with SQL <code>GROUP BY</code>.</td></tr>
+</table>
+<p>These counts overlap; for example, many refund rows have both a negative fare and a negative tip. Section 5 counts each removed row once.</p>
+$raw
+$odd
+
+<!-- 5. Cleaning -->
+<h2>5. How I cleaned it</h2>
+<p><code>clean(df)</code> runs on every chunk and returns <code>(cleaned_df, metrics)</code>. The rules run in this order, so each removed
+row is counted under exactly one rule.</p>
+<table>
+  <tr><th>#</th><th>Rule</th><th>Action</th><th>Why</th><th class="n">Removed</th></tr>
+  <tr><td>1</td><td>Missing pickup/dropoff time, location, fare or total</td><td><span class="tag drop">DROP</span></td>
+  <td>A trip without these cannot be analysed at all.</td><td class="n">0</td></tr>
+  <tr><td>2</td><td>Pickup outside Jan 2021, dropoff &le; pickup, or trip &gt; 24 h</td><td><span class="tag drop">DROP</span></td>
+  <td>Clock errors; these trips belong to another month or have impossible durations.</td><td class="n">6,586</td></tr>
+  <tr><td>3</td><td><code>fare_amount</code> or <code>total_amount</code> &le; 0</td><td><span class="tag drop">DROP</span></td>
+  <td>Refunds and voids, not real trips, and they would pull revenue averages down.</td><td class="n">7,343</td></tr>
+  <tr><td>4</td><td><code>trip_distance</code> &le; 0 or &gt; 100 miles</td><td><span class="tag drop">DROP</span></td>
+  <td>Zero distance means a cancelled trip or a broken meter, and over 100 miles is beyond any plausible yellow-cab trip.</td><td class="n">18,362</td></tr>
+  <tr><td>5</td><td><code>passenger_count</code> = 0</td><td><span class="tag drop">DROP</span></td>
+  <td>Driver entry error. Missing counts are not dropped; rule 8 fills them instead.</td><td class="n">26,242</td></tr>
+  <tr><td>6</td><td>Any negative extra, tax, tip, toll or surcharge</td><td><span class="tag drop">DROP</span></td>
+  <td>Charges cannot be negative on a kept trip. Most of these rows were already removed as refunds by rule 3.</td><td class="n">2</td></tr>
+  <tr><td>7</td><td>Exact duplicate rows, within and across chunks</td><td><span class="tag drop">DROP</span></td>
+  <td>The same trip sent twice would be counted twice. A shared set of row hashes catches duplicates across chunk boundaries.</td><td class="n">0</td></tr>
+  <tr><td>8</td><td>Missing <code>passenger_count</code>, <code>RatecodeID</code>, <code>store_and_fwd_flag</code>, <code>payment_type</code></td>
+  <td><span class="tag fix">FIX</span></td><td>Filled with 1, 99 (unknown), "N" and 5 (Unknown in the TLC data dictionary).
+  The trip itself is valid, so it is kept.</td><td class="n">0 (91,241 filled)</td></tr>
+  <tr><td>9</td><td>Missing <code>VendorID</code></td><td><span class="tag flag">FLAG</span></td>
+  <td>There is no honest default, so it stays NULL and <code>flag_missing_vendor</code> = true.</td><td class="n">0 (91,241 flagged)</td></tr>
+  <tr><td>10</td><td><code>fare_amount</code> &gt; 500</td><td><span class="tag flag">FLAG</span></td>
+  <td>Possible for a long negotiated trip, so it is kept but marked with <code>flag_high_fare</code>.</td><td class="n">0 (1 flagged)</td></tr>
+</table>
+
+<h3>Before and after</h3>
+<table>
+  <tr><th style="width:40%"></th><th class="n" style="width:30%">Before</th><th class="n" style="width:30%">After</th></tr>
+  <tr><td>Rows</td><td class="n">1,369,765</td><td class="n" style="white-space:nowrap">1,311,230 (-58,535, -4.27%)</td></tr>
+  <tr><td>Nulls in passenger_count / RatecodeID / payment_type</td><td class="n">98,352</td><td class="n">0</td></tr>
+  <tr><td>Pickup range</td><td class="n" style="white-space:nowrap">2008-12-31 to 2021-02-22</td><td class="n" style="white-space:nowrap">2021-01-01 to 2021-01-31</td></tr>
+  <tr><td>fare_amount min</td><td class="n">-490.00</td><td class="n">0.01</td></tr>
+  <tr><td>trip_distance max</td><td class="n">263,163.28</td><td class="n">95.50</td></tr>
+  <tr><td>passenger_count min</td><td class="n">0</td><td class="n">1</td></tr>
+  <tr><td>Most negative tip</td><td class="n">-100.00</td><td class="n">0.00</td></tr>
+</table>
+$rules
+$metrics
+$clean
+
+<!-- 6. Answers -->
+<h2>6. Answers</h2>
+<h3>Q1: Why does the container reach the DB as pgdatabase, not localhost?</h3>
+<p>Every container has its own network namespace, so inside the ingestion container <code>localhost</code> means that container
+itself, and nothing is listening on its port 5432. Docker Compose puts both services on the <code>pg-network</code> network and runs a
+DNS server on it that resolves each service name to its container's IP address. So <code>pgdatabase</code> is the address of the
+Postgres container. From my own PC, <code>localhost:5432</code> does work, but only because the compose file publishes that port to the
+host with <code>ports: "5432:5432"</code>. I tested this: running the container with <code>--host=localhost</code> fails with
+"Connection refused" (section 7), and <code>--host=pgdatabase</code> works.</p>
+
+<h3>Q2: Why chunks, and what was wrong with replace for many months?</h3>
+<p><b>Chunks</b> keep memory flat: only 100,000 rows are in memory at a time, whatever the size of the file. One month already takes
+264 MB once parsed, so a year would need over 3 GB at once, while a 100,000-row chunk needs only about 20 MB. Chunks also make the progress visible, and if the
+load fails, it fails partway through instead of at the very end.</p>
+<p><b>Replace for many months:</b> the script uses <code>if_exists="replace"</code> on its first chunk. If it is run once per month,
+every run hits a new "first chunk", so loading February drops the table and deletes all of January. After loading 12 months, the
+table would only hold December, and nothing warns you. The fix is to replace only once, before the first chunk of the first month,
+and append everything else. <code>ingest_data.py</code> does this by accepting several <code>--url</code> values in one run and keeping
+a single <code>first_chunk</code> switch across all files. Later months can also be added in separate runs that only append.</p>
+
+<h3>Q3: How did you verify your results?</h3>
+<ul>
+  <li><b>Load count:</b> <code>ingest_data.py</code> compares the rows it read with <code>SELECT COUNT(*)</code> after the load:
+  1,369,765 = 1,369,765. The script stops with an error if they differ.</li>
+  <li><b>Cleaning arithmetic:</b> <code>pipeline.py</code> asserts that input minus the sum of removals equals output
+  (1,369,765 - 58,535 = 1,311,230), then re-reads the cleaned file and asserts that it holds exactly 1,311,230 rows.</li>
+  <li><b>Independent cross-check in SQL:</b> I computed two of the pandas numbers again in Postgres with different code. Both match:
+  98,352 null <code>VendorID</code>s and 6,586 bad-date rows (rule 2 is the first rule that removes rows, so its count can be compared
+  directly with the raw table).</li>
+  <li><b>Profile after cleaning:</b> every cleaned column falls inside its rule. Pickups are all in January, the smallest fare is 0.01,
+  the longest trip is 95.5 miles, the fewest passengers is 1, and no charge column is negative.</li>
+</ul>
+$sql
+
+<!-- 7. What broke -->
+<h2>7. What broke</h2>
+<h3>The error</h3>
+<p>The first time I ran the ingestion container, I used <code>--host=localhost</code>, the same value that works when the script runs
+directly on my PC. It crashed with <code>psycopg2.OperationalError: connection to server at "localhost" ... port 5432 failed:
+Connection refused</code>.</p>
+$err
+<h3>The cause</h3>
+<p>Inside the container, <code>localhost</code> is the container itself, not my PC or the database container (see Q1). Port 5432 was
+published on my PC, but the ingestion container cannot see my PC's localhost.</p>
+<h3>The fix</h3>
+<p>I ran the container on the compose network with <code>--network=pg-network</code> and pointed it at the service name with
+<code>--host=pgdatabase</code>. The load then finished, and all 1,369,765 rows were inserted and verified.</p>
+$fix
+<h3>Also: Docker was not running</h3>
+<p>Before that, the first <code>docker</code> command failed because Docker Desktop was not started (the Docker engine's pipe did not
+exist). Starting Docker Desktop and waiting for the engine fixed it.</p>
+$daemon
+
+</body>
+</html>

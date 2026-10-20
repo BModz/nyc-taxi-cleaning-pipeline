@@ -1,0 +1,6 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker compose exec -T pgdatabase psql -U root -d ny_taxi -c 'SELECT COUNT(*) FROM yellow_taxi_trips;'
+  count  
+---------
+ 1369765
+(1 row)
+

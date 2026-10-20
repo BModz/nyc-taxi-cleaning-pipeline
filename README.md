@@ -7,9 +7,31 @@
 * Applied custom `clean(df)` logic returning cleaned data and removed-row metrics.
 * Pipeline stopped at the cleaning stage without loading into PostgreSQL.
 
-No data files or `.venv` directory are tracked in this repository.
+No data files, `.venv` directory or keys are tracked in this repository; credentials live in a git-ignored `.env`.
 
-## Setup
+## Files
+
+| File | Purpose |
+|---|---|
+| `ingest_data.py` | Loads the CSV into Postgres in 100,000-row chunks (replace on the first chunk, then append) and checks the row count |
+| `Dockerfile` | Builds the `taxi_ingest:v001` image that runs `ingest_data.py` |
+| `docker-compose.yaml` | Postgres (`pgdatabase`) and pgAdmin on the `pg-network` network |
+| `pipeline.py` | Chunked profiling and `clean(df)`; stops before any database load |
+| `report/build_report.py` | Builds the PDF report from the captured terminal output in `evidence/` |
+
+## Load into Postgres with Docker
+
+```bash
+cp .env.example .env            # then change the passwords
+docker compose up -d --wait
+docker build -t taxi_ingest:v001 .
+docker run --rm --network=pg-network --env-file .env taxi_ingest:v001 --host=pgdatabase --table=yellow_taxi_trips --url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+docker compose exec pgdatabase psql -U root -d ny_taxi -c "SELECT COUNT(*) FROM yellow_taxi_trips;"
+```
+
+The count should be 1,369,765. pgAdmin runs at http://localhost:8085.
+
+## Setup (cleaning pipeline)
 
 ```bash
 python -m venv .venv
@@ -55,6 +77,8 @@ order, so each removed row is counted once:
    `tolls_amount`, `improvement_surcharge` or `congestion_surcharge` is negative.
 7. **Duplicates:** drop exact duplicate rows within a chunk and, through a
    shared set of row hashes, across chunks.
+
+Rows with `VendorID` missing are flagged (`flag_missing_vendor`), as are fares over 500 (`flag_high_fare`).
 
 Non-critical gaps are filled instead of dropped: `passenger_count -> 1`,
 `RatecodeID -> 99` (unknown), `store_and_fwd_flag -> "N"`,

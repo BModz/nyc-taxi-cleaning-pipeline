@@ -1,0 +1,15 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker compose up -d --wait
+ Network pg-network Creating 
+ Network pg-network Created 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Creating 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Created 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Creating 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Created 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Starting 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Started 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Starting 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Started 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Waiting 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Waiting 
+ Container nyc-taxi-cleaning-pipeline-pgadmin-1 Healthy 
+ Container nyc-taxi-cleaning-pipeline-pgdatabase-1 Healthy 

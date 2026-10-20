@@ -1,0 +1,2 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker info --format 'Server Version: {{.ServerVersion}}  OS: {{.OperatingSystem}}'
+Server Version: 29.6.2  OS: Docker Desktop

@@ -1,0 +1,11 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> Get-Content evidence\q4_odd_values.sql | docker compose exec -T pgdatabase psql -U root -d ny_taxi
+ non_pos_fare | zero_distance | over_100mi | zero_pax | neg_charges 
+--------------+---------------+------------+----------+-------------
+         7411 |         19952 |         55 |    26726 |        6667
+(1 row)
+
+ duplicate_rows 
+----------------
+              0
+(1 row)
+

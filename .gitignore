@@ -7,3 +7,11 @@ data/
 # Virtual environment
 .venv/
 __pycache__/
+
+# Secrets
+.env
+
+# Generated report output (rebuild with: python report/build_report.py)
+report/img/
+report/report.html
+report/Report.pdf

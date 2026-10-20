@@ -1,0 +1,6 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> Get-Content evidence\q3_check.sql | docker compose exec -T pgdatabase psql -U root -d ny_taxi
+ null_vendor | bad_dates |     min_pickup      |     max_pickup      
+-------------+-----------+---------------------+---------------------
+       98352 |      6586 | 2008-12-31 23:05:14 | 2021-02-22 16:52:16
+(1 row)
+

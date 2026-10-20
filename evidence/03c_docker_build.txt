@@ -1,0 +1,111 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker build -t taxi_ingest:v001 .
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 228B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim
+#2 DONE 2.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 4.41kB done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 resolve docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f 0.0s done
+#5 DONE 0.1s
+
+#5 [1/5] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 sha256:2f5b06adfd9138ef928aaf8b34f3fecf122b137a537133dfe421509dd57b4a47 0B / 250B 0.2s
+#5 sha256:2f5b06adfd9138ef928aaf8b34f3fecf122b137a537133dfe421509dd57b4a47 250B / 250B 0.2s done
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 0B / 11.92MB 0.3s
+#5 sha256:65a67aec859c5fafe6ca38c2ed07825c97acf3febdcf62b79441a1bfca4f3a4a 0B / 1.29MB 0.2s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 1.05MB / 11.92MB 1.4s
+#5 sha256:65a67aec859c5fafe6ca38c2ed07825c97acf3febdcf62b79441a1bfca4f3a4a 1.29MB / 1.29MB 1.9s done
+#5 extracting sha256:65a67aec859c5fafe6ca38c2ed07825c97acf3febdcf62b79441a1bfca4f3a4a
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 2.10MB / 11.92MB 2.3s
+#5 extracting sha256:65a67aec859c5fafe6ca38c2ed07825c97acf3febdcf62b79441a1bfca4f3a4a 0.4s done
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 3.15MB / 11.92MB 3.0s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 4.19MB / 11.92MB 3.8s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 5.24MB / 11.92MB 4.5s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 6.29MB / 11.92MB 5.6s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 7.34MB / 11.92MB 6.5s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 8.39MB / 11.92MB 7.4s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 9.44MB / 11.92MB 8.3s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 10.49MB / 11.92MB 9.2s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 11.53MB / 11.92MB 10.1s
+#5 sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 11.92MB / 11.92MB 10.3s done
+#5 DONE 10.4s
+
+#5 [1/5] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 extracting sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446
+#5 extracting sha256:3a5db7051419a594a866378c5d2c422e3d282d69e6792b3213772cb1349da446 0.6s done
+#5 DONE 11.0s
+
+#5 [1/5] FROM docker.io/library/python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
+#5 extracting sha256:2f5b06adfd9138ef928aaf8b34f3fecf122b137a537133dfe421509dd57b4a47 0.0s done
+#5 DONE 11.0s
+
+#6 [2/5] WORKDIR /app
+#6 DONE 0.2s
+
+#7 [3/5] COPY requirements-ingest.txt .
+#7 DONE 0.1s
+
+#8 [4/5] RUN pip install --no-cache-dir -r requirements-ingest.txt
+#8 3.025 Collecting pandas==2.2.3 (from -r requirements-ingest.txt (line 1))
+#8 3.428   Downloading pandas-2.2.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (89 kB)
+#8 5.041 Collecting sqlalchemy==2.0.36 (from -r requirements-ingest.txt (line 2))
+#8 5.098   Downloading SQLAlchemy-2.0.36-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (9.7 kB)
+#8 5.438 Collecting psycopg2-binary==2.9.10 (from -r requirements-ingest.txt (line 3))
+#8 5.500   Downloading psycopg2_binary-2.9.10-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.9 kB)
+#8 6.548 Collecting numpy>=1.26.0 (from pandas==2.2.3->-r requirements-ingest.txt (line 1))
+#8 6.618   Downloading numpy-2.5.4-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+#8 6.704 Collecting python-dateutil>=2.8.2 (from pandas==2.2.3->-r requirements-ingest.txt (line 1))
+#8 6.761   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+#8 7.063 Collecting pytz>=2020.1 (from pandas==2.2.3->-r requirements-ingest.txt (line 1))
+#8 7.124   Downloading pytz-2026.5-py2.py3-none-any.whl.metadata (22 kB)
+#8 7.239 Collecting tzdata>=2022.7 (from pandas==2.2.3->-r requirements-ingest.txt (line 1))
+#8 7.303   Downloading tzdata-2026.5-py2.py3-none-any.whl.metadata (1.4 kB)
+#8 7.402 Collecting typing-extensions>=4.6.0 (from sqlalchemy==2.0.36->-r requirements-ingest.txt (line 2))
+#8 7.471   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#8 7.559 Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas==2.2.3->-r requirements-ingest.txt (line 1))
+#8 7.626   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#8 7.696 Downloading pandas-2.2.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.7 MB)
+#8 36.29    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.7/12.7 MB 441.2 kB/s  0:00:28
+#8 36.34 Downloading SQLAlchemy-2.0.36-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.2 MB)
+#8 39.01    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.2/3.2 MB 1.2 MB/s  0:00:02
+#8 39.06 Downloading psycopg2_binary-2.9.10-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
+#8 42.74    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 829.5 kB/s  0:00:03
+#8 42.79 Downloading numpy-2.5.4-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+#8 91.76    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 304.4 kB/s  0:00:48
+#8 91.81 Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+#8 92.31 Downloading pytz-2026.5-py2.py3-none-any.whl (506 kB)
+#8 93.41 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#8 93.50 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 93.72 Downloading tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+#8 94.93 Installing collected packages: pytz, tzdata, typing-extensions, six, psycopg2-binary, numpy, sqlalchemy, python-dateutil, pandas
+#8 104.3 
+#8 104.3 Successfully installed numpy-2.5.4 pandas-2.2.3 psycopg2-binary-2.9.10 python-dateutil-2.9.0.post0 pytz-2026.5 six-1.17.0 sqlalchemy-2.0.36 typing-extensions-4.16.0 tzdata-2026.5
+#8 104.3 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 DONE 105.2s
+
+#9 [5/5] COPY ingest_data.py .
+#9 DONE 0.1s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 7.2s done
+#10 exporting manifest sha256:60216b1f7e76a0e370325b0d743c52fa135cdd936f2de84f68862196c0deb8a7 done
+#10 exporting config sha256:475f7d1eccb4f05228d23f756f02e521932f70657d428fcc3571630285855a39 done
+#10 exporting attestation manifest sha256:0b81ff4f19c2ca39742bc156f93a015ae2b4840226b56083733139177edb33da 0.0s done
+#10 exporting manifest list sha256:26868be5ef060930f6cb2ad696d445c24b249f398e4938177c600a7a46ea3186 done
+#10 naming to docker.io/library/taxi_ingest:v001 done
+#10 unpacking to docker.io/library/taxi_ingest:v001
+#10 unpacking to docker.io/library/taxi_ingest:v001 2.9s done
+#10 DONE 10.1s

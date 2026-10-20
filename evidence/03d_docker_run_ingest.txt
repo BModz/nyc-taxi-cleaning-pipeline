@@ -1,0 +1,17 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker run --rm --network=pg-network --env-file .env taxi_ingest:v001 --host=pgdatabase --table=yellow_taxi_trips --url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+Downloading https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+yellow_tripdata_2021-01.csv.gz chunk  0: inserted 100,000 rows (total   100,000) in 39.5s
+yellow_tripdata_2021-01.csv.gz chunk  1: inserted 100,000 rows (total   200,000) in 32.9s
+yellow_tripdata_2021-01.csv.gz chunk  2: inserted 100,000 rows (total   300,000) in 32.6s
+yellow_tripdata_2021-01.csv.gz chunk  3: inserted 100,000 rows (total   400,000) in 32.2s
+yellow_tripdata_2021-01.csv.gz chunk  4: inserted 100,000 rows (total   500,000) in 35.2s
+yellow_tripdata_2021-01.csv.gz chunk  5: inserted 100,000 rows (total   600,000) in 46.8s
+yellow_tripdata_2021-01.csv.gz chunk  6: inserted 100,000 rows (total   700,000) in 34.3s
+yellow_tripdata_2021-01.csv.gz chunk  7: inserted 100,000 rows (total   800,000) in 34.2s
+yellow_tripdata_2021-01.csv.gz chunk  8: inserted 100,000 rows (total   900,000) in 33.9s
+yellow_tripdata_2021-01.csv.gz chunk  9: inserted 100,000 rows (total 1,000,000) in 34.3s
+yellow_tripdata_2021-01.csv.gz chunk 10: inserted 100,000 rows (total 1,100,000) in 34.5s
+yellow_tripdata_2021-01.csv.gz chunk 11: inserted 100,000 rows (total 1,200,000) in 35.1s
+yellow_tripdata_2021-01.csv.gz chunk 12: inserted 100,000 rows (total 1,300,000) in 35.9s
+yellow_tripdata_2021-01.csv.gz chunk 13: inserted  69,765 rows (total 1,369,765) in 23.9s
+Rows read: 1,369,765 | rows in yellow_taxi_trips: 1,369,765

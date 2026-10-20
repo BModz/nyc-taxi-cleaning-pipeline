@@ -1,0 +1,4 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker compose ps --format 'table {{.Name}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+NAME                                      IMAGE            STATUS                   PORTS
+nyc-taxi-cleaning-pipeline-pgadmin-1      dpage/pgadmin4   Up 5 seconds             0.0.0.0:8085->80/tcp, [::]:8085->80/tcp
+nyc-taxi-cleaning-pipeline-pgdatabase-1   postgres:16      Up 6 seconds (healthy)   0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp

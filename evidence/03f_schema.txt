@@ -1,0 +1,23 @@
+PS D:\Project\nyc-taxi-cleaning-pipeline> docker compose exec -T pgdatabase psql -U root -d ny_taxi -c '\d yellow_taxi_trips'
+                           Table "public.yellow_taxi_trips"
+        Column         |            Type             | Collation | Nullable | Default 
+-----------------------+-----------------------------+-----------+----------+---------
+ VendorID              | bigint                      |           |          | 
+ tpep_pickup_datetime  | timestamp without time zone |           |          | 
+ tpep_dropoff_datetime | timestamp without time zone |           |          | 
+ passenger_count       | bigint                      |           |          | 
+ trip_distance         | double precision            |           |          | 
+ RatecodeID            | bigint                      |           |          | 
+ store_and_fwd_flag    | text                        |           |          | 
+ PULocationID          | bigint                      |           |          | 
+ DOLocationID          | bigint                      |           |          | 
+ payment_type          | bigint                      |           |          | 
+ fare_amount           | double precision            |           |          | 
+ extra                 | double precision            |           |          | 
+ mta_tax               | double precision            |           |          | 
+ tip_amount            | double precision            |           |          | 
+ tolls_amount          | double precision            |           |          | 
+ improvement_surcharge | double precision            |           |          | 
+ total_amount          | double precision            |           |          | 
+ congestion_surcharge  | double precision            |           |          | 
+
